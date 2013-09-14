@@ -1,92 +1,100 @@
-var jobFormService = function jobFormService($log) {
 
-    var formStateEnum = {
+var socketFactory = function ($rootScope) {
+
+  var socket = io.connect();
+
+  return {
+
+    on : function (eventName, callback) {
+
+      socket.on(eventName, function () {
+
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+
+    emit : function (eventName, data, callback) {
+
+      socket.emit(eventName, data, function () {
+        
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+};
+
+var socketFactory2 = function($q, $rootScope, $log) {
+    // We return this object to anything injecting our service
+    var Service = {};
+    // Keep all pending requests here until they get responses
+    var callbacks = {};
+    // Create a unique callback ID to map requests to responses
+    var currentCallbackId = 0;
+    // Create our websocket object with the address to the websocket
+    var ws = new WebSocket("ws://localhost:8000/socket/");
     
-        'init'              : 0,
-        'ready'             : 1,
-        'edit'              : 2,
-        'saving'            : 3,
-        'saving_success'    : 4,
-        'saving_failed'     : 5,
-        'cancelling'        : 6
+    ws.onopen = function(){  
+        $log.log("Socket has been opened!");  
     };
-
-    var formStateList = [
     
-        'init',
-        'ready',
-        'edit',
-        'saving',
-        'saving_success',
-        'saving_failed',
-        'cancelling'
-    ];
-
-    var formState = formStateEnum.init;
-
-    var jobFormModelEmpty = {
-
-        jobType     : null,
-        jobStatus   : null,
-        startDate   : null,
-        endDate     : null,
-        id          : null,
-        docLink     : null,
+    ws.onmessage = function(message) {
+        listener(JSON.parse(message.data));
     };
 
-    var jobFormModelDummy = {
+    function sendRequest(request) {
+      var defer = $q.defer();
+      var callbackId = getCallbackId();
+      callbacks[callbackId] = {
+        time: new Date(),
+        cb:defer
+      };
+      request.callback_id = callbackId;
+      $log.log('Sending request', request);
+      ws.send(JSON.stringify(request));
+      return defer.promise;
+    }
 
-        jobType     : "jobType",
-        jobStatus   : "jobStatus",
-        startDate   : "startDate",
-        endDate     : "endDate",
-        id          : "id",
-        docLink     : "docLink",
-    };
+    function listener(data) {
+      var messageObj = data;
+      $log.log("Received data from websocket: ", messageObj);
+      // If an object exists with callback_id in our callbacks object, resolve it
+      if(callbacks.hasOwnProperty(messageObj.callback_id)) {
+        $log.log(callbacks[messageObj.callback_id]);
+        $rootScope.$apply(callbacks[messageObj.callback_id].cb.resolve(messageObj.data));
+        delete callbacks[messageObj.callbackID];
+      }
+    }
+    // This creates a new callback ID for a request
+    function getCallbackId() {
+      currentCallbackId += 1;
+      if(currentCallbackId > 10000) {
+        currentCallbackId = 0;
+      }
+      return currentCallbackId;
+    }
 
-    var formSaveHandler = function formSaveHandler() {
+    // Define a "getter" for getting customer data
+    Service.getCustomers = function() {
+      var request = {
+        type: "get_customers"
+      }
+      // Storing in a variable for clarity on what sendRequest returns
+      var promise = sendRequest(request); 
+      return promise;
+    }
 
-        formState = formStateEnum.saving;
-
-        $log.log('save command fired');
-        $log.log('state - saving');
-    };
-
-    var formCancelHandler = function formCancelHandler() {
-
-        formState = formStateEnum.cancelling;
-
-        $log.log('cancel command fired');
-        $log.log('state - cancelling');
-    };
-
-    //return {
-
-        this.getJobFormModel = function() {
-
-            return jobFormModelEmpty;
-        };
-
-        this.newJobModel = function() {
-
-        };
-
-        this.createJobModel = function() {
-
-        };
-
-        this.saveJobModel = function() {
-
-        };
-
-        this.deleteJobModel = function() {
-
-        };
-
-    //}
-
+    return Service;
 };
 
 var s = angular.module('ngapp.services', []);
 
-s.service('jobFormService', jobFormService);
+s.factory('socketFactory', socketFactory);
+s.factory('socketFactory2', socketFactory2);

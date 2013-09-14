@@ -1,0 +1,12 @@
+{
+    "name": "MobileMaestro",
+    "private": true,
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "3.4.x",
+        "socket.io": "0.9.x",
+        "lodash": "2.0.x",
+        "q": "0.9.7",
+        "async": "0.2.x"
+    }
+}
