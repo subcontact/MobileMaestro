@@ -1,16 +1,26 @@
-var c = angular.module('ngapp.controllers', []);
 
-function dashboard($scope) {
+function dashboard($scope, $log, dashboardService) {
 
+	$log.log('here i am ');
+
+	dashboardService.on('echo', function(msg) {
+
+		$log.log("dashboard echo message received: " + msg);
+	})
+
+	dashboardService.emit('echo', "Dashboard Hello World");
 }
-c.controller('DashboardCtrl', ['$scope', dashboard]);
 
 function admin($scope) {
 
 }
-c.controller('AdminCtrl', ['$scope', admin]);
 
 function client($scope) {
 
 }
-c.controller('ClientCtrl', ['$scope', client]);
+
+
+var c = angular.module('ngapp.controllers', []);
+c.controller('DashboardCtrl', ['$scope', '$log', 'dashboardService', dashboard]);
+c.controller('AdminCtrl', ['$scope', '$log', 'dashboardService', admin]);
+c.controller('ClientCtrl', ['$scope', '$log', 'dashboardService', client]);
