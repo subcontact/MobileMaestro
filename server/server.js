@@ -19,7 +19,8 @@ io.sockets.on("connection", function (socket) {
         callback = callback || function () {};
  
         socket.emit("echo", msg);
- 
+ 		setTimeout(function() { socket.emit("echo", msg); }, 3000);
+ 		setTimeout(function() { socket.emit("echo", msg); }, 5000);
         callback(null, "Done.");
     });
 });
