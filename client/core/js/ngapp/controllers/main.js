@@ -9,7 +9,59 @@ function dashboard($scope, $log, dashboardService) {
 	})
 
 	dashboardService.emit('echo', "Dashboard Hello World");
+
 }
+
+function activityManager() {
+
+	this.currentActivity = null;
+	this.activityList = {
+
+		'intro' : 'intro',
+		'preso' : 'preso',
+		'quiz' 	: 'quiz',
+		'worm'	: 'worm'
+	};
+	this.defaultActivity = this.activityList.intro;
+
+}
+
+activityManager.prototype.change = function(activityName) {
+
+	if (this.currentActivity) {
+
+		this.currentActivity.destroy();
+	}
+
+	if (activityName in this.activityList) {
+
+		var activityDashboardContentPath = "/activities/" + activityName + "dashboard.html";
+		// load dashboard module
+		// initialise dashboard
+
+	} else {
+
+		console.log('unknown activity ' + activityName);
+	}
+}
+
+function activity() {
+
+}
+
+activity.prototype.init = function() {
+
+}
+
+activity.prototype.destroy = function() {
+
+}
+
+
+
+
+
+
 
 function admin($scope) {
 
