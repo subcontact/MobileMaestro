@@ -38,6 +38,25 @@ var connHandler = function (socket, channel) {
  		setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 5000);
         callback(null, "Done.");
     });
+
+    socket.on("__rpcRequester", function(msg, callback) {
+
+        console.log("__rpcRequester called ");
+        console.log(JSON.stringify(msg));
+        var responseData = "";
+
+        switch (msg.method) {
+
+            case 'getTime':
+                responseData = new Date();
+            break;
+
+            case 'echo':
+                responseData = msg.params;
+        }
+        socket.emit(msg.id, responseData);
+        
+    });
 };
 
 var connections = {

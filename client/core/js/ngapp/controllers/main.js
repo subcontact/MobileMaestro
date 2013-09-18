@@ -1,17 +1,32 @@
-
+//--------------------------------------------------------------------------------------------------------------------
 function dashboard($scope, $log, dashboardService) {
 
 	$log.log('here i am ');
 
-	dashboardService.on('echo', function(msg) {
+	dashboardService.bus.on('echo', function(msg) {
 
 		$log.log("dashboard echo message received: " + msg);
 	})
+	dashboardService.bus.emit('echo', "Dashboard Hello World");
 
-	dashboardService.emit('echo', "Dashboard Hello World");
+	dashboardService.rpc.getTime().then(function(data) {
 
+		console.log('getTime response : ' + data);
+	});
+
+	dashboardService.rpc.echo('one two three', 'abc', 5).then(function(data) {
+
+		console.log('echo response : ' + data);
+	});
+
+/*
+	.then(function(data) {
+
+		console.log('getTime returned ');// + data);
+	});
+*/
 }
-
+//--------------------------------------------------------------------------------------------------------------------
 function activityManager() {
 
 	this.currentActivity = null;
@@ -25,8 +40,8 @@ function activityManager() {
 	this.defaultActivity = this.activityList.intro;
 
 }
-
-activityManager.prototype.change = function(activityName) {
+//--------------------------------------------------------------------------------------------------------------------
+activityManager.prototype.setActivity = function(activityName) {
 
 	if (this.currentActivity) {
 
@@ -36,6 +51,8 @@ activityManager.prototype.change = function(activityName) {
 	if (activityName in this.activityList) {
 
 		var activityDashboardContentPath = "/activities/" + activityName + "dashboard.html";
+		this.currentActivity = activityName;
+
 		// load dashboard module
 		// initialise dashboard
 
@@ -44,24 +61,38 @@ activityManager.prototype.change = function(activityName) {
 		console.log('unknown activity ' + activityName);
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------
+activityManager.prototype.getActivity = function() {
 
+	return this.currentActivity.currentActivity;
+}
+//--------------------------------------------------------------------------------------------------------------------
+activityManager.prototype.start = function(activityName) {
+
+	this.setActivity(activityName);
+}
+//--------------------------------------------------------------------------------------------------------------------
+activityManager.prototype.stop = function() {
+
+	if (this.currentActivity) {
+
+		this.currentActivity.destroy();
+	}
+	//this.currentActivity = null;
+}
+//--------------------------------------------------------------------------------------------------------------------
 function activity() {
 
 }
-
+//--------------------------------------------------------------------------------------------------------------------
 activity.prototype.init = function() {
 
 }
-
+//--------------------------------------------------------------------------------------------------------------------
 activity.prototype.destroy = function() {
 
 }
-
-
-
-
-
-
+//--------------------------------------------------------------------------------------------------------------------
 
 function admin($scope) {
 
