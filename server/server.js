@@ -25,9 +25,46 @@ io.sockets.on("connection", function (socket) {
     });
 });
 */
-var connHandler = function (socket, channel) {
+var baseConnHandler = function (socket, channel) {
 
-	console.log("client joined! " + socket.id);
+    var init = function() {
+
+        if (meta[channel][socket.id]) {
+
+            console.log('ERROR hey id already exists!');
+            return;
+        }
+
+        meta[channel][socket.id] = {
+
+            '_id'    : socket.id,
+            '_start' : Date.now(),
+        };
+
+        console.log("client joined! ");
+        console.log(meta[channel][socket.id]);
+        console.log(Object.keys(meta[channel]).length);
+    };
+
+    init();
+
+    socket.on('disconnect', function () {
+        console.log("player: disconnected");
+
+        if (! meta[channel][socket.id]) {
+
+            console.log('ERROR  id does not exist!');
+            return;
+        }
+
+        console.log(meta[channel][socket.id]);
+        delete meta[channel][socket.id];
+        console.log(Object.keys(meta[channel]).length);
+
+        //playfield.woosOut(socket.id);
+        //delete players[socket.id];
+    });
+
 
     socket.on("echo", function (msg, callback) {
     	//console.log(callback);
@@ -41,8 +78,8 @@ var connHandler = function (socket, channel) {
 
     socket.on("__rpcRequester", function(msg, callback) {
 
-        console.log("__rpcRequester called ");
-        console.log(JSON.stringify(msg));
+        //console.log("__rpcRequester called ");
+        //console.log(JSON.stringify(msg));
         var responseData = "";
 
         switch (msg.method) {
@@ -59,11 +96,18 @@ var connHandler = function (socket, channel) {
     });
 };
 
+var meta = {
+
+    client     : {},
+    dashboard  : {},
+    console    : {}
+};
+
 var connections = {
 
-    client 		: io.of('/client').on('connection', 	function(socket) { connHandler(socket, 'client'); }),
-    playfield 	: io.of('/dashboard').on('connection', 	function(socket) { connHandler(socket, 'dashboard'); }),
-    admin 		: io.of('/admin').on('connection', 		function(socket) { connHandler(socket, 'admin'); })
+    client 		: io.of('/client').on('connection', 	function(socket) { baseConnHandler(socket, 'client'); }),
+    dashboard 	: io.of('/dashboard').on('connection', 	function(socket) { baseConnHandler(socket, 'dashboard'); }),
+    console 	: io.of('/console').on('connection', 	function(socket) { baseConnHandler(socket, 'admin'); })
 }
 
 
