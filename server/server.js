@@ -5,6 +5,11 @@ var express = require("express");
 var app     = express(); 
 var io      = require('socket.io').listen(app.listen(port));
 
+var _        = require("lodash");
+var Mediator = require("mediator-js").Mediator,
+    mediator = new Mediator();
+
+
 console.log("Server listening on port %d", port);
 
 
@@ -44,6 +49,8 @@ var baseConnHandler = function (socket, channel) {
         console.log("client joined! ");
         console.log(meta[channel][socket.id]);
         console.log(Object.keys(meta[channel]).length);
+
+        mediator.emit("client:joined", meta[channel][socket.id]);
     };
 
     init();
@@ -57,6 +64,8 @@ var baseConnHandler = function (socket, channel) {
             return;
         }
 
+        mediator.emit("client:left", meta[channel][socket.id]);
+
         console.log(meta[channel][socket.id]);
         delete meta[channel][socket.id];
         console.log(Object.keys(meta[channel]).length);
@@ -65,6 +74,7 @@ var baseConnHandler = function (socket, channel) {
         //delete players[socket.id];
     });
 
+/*
 
     socket.on("echo", function (msg, callback) {
     	//console.log(callback);
@@ -75,6 +85,7 @@ var baseConnHandler = function (socket, channel) {
  		setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 5000);
         callback(null, "Done.");
     });
+*/
 
     socket.on("__rpcRequester", function(msg, callback) {
 
@@ -96,6 +107,76 @@ var baseConnHandler = function (socket, channel) {
     });
 };
 
+var init = function(socket, channel, meta) {
+
+    if (meta[channel][socket.id]) {
+
+        console.log('ERROR hey id already exists!');
+        return;
+    }
+
+    meta[channel][socket.id] = {
+
+        '_id'    : socket.id,
+        '_start' : Date.now(),
+        'channel': channel
+    };
+
+    mediator.emit("client:joined", meta[channel][socket.id]);
+
+
+    socket.on('disconnect', function () {
+
+        console.log("player: disconnected");
+
+        if (! meta[channel][socket.id]) {
+
+            console.log('ERROR  id does not exist!');
+            return;
+        }
+
+        mediator.emit("client:left", meta[channel][socket.id]);
+        //delete meta[channel][socket.id];
+    });
+
+/*
+
+    socket.on("echo", function (msg, callback) {
+        //console.log(callback);
+        callback = callback || function () {};
+ 
+        socket.emit("echo", channel + " " + msg);
+        setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 3000);
+        setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 5000);
+        callback(null, "Done.");
+    });
+*/
+
+    socket.on("__rpcRequester", function(msg, callback) {
+
+        //console.log("__rpcRequester called ");
+        //console.log(JSON.stringify(msg));
+        var responseData = "";
+
+        switch (msg.method) {
+
+            case 'getTime':
+                responseData = new Date();
+            break;
+
+            case 'echo':
+                responseData = msg.params;
+        }
+        socket.emit(msg.id, responseData);
+        
+    });
+};
+
+var clientHandler = function(socket) {
+
+    init(socket, 'client', meta);
+};
+
 var meta = {
 
     client     : {},
@@ -105,10 +186,24 @@ var meta = {
 
 var connections = {
 
-    client 		: io.of('/client').on('connection', 	function(socket) { baseConnHandler(socket, 'client'); }),
+    client 		: io.of('/client').on('connection', 	clientHandler),
     dashboard 	: io.of('/dashboard').on('connection', 	function(socket) { baseConnHandler(socket, 'dashboard'); }),
     console 	: io.of('/console').on('connection', 	function(socket) { baseConnHandler(socket, 'admin'); })
 }
+
+mediator.on("client:joined", function(data) {
+
+    console.log("client:joined");
+    console.log(JSON.stringify(data));
+    //console.log(Object.keys(meta[data.channel]).length);
+})
+
+mediator.on("client:left", function(data) {
+
+    console.log("client:left");
+    console.log(JSON.stringify(data));
+    //console.log(Object.keys(meta[data.channel]).length);
+})
 
 
 process.on('uncaughtException', function (err) {
