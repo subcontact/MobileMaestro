@@ -70,6 +70,9 @@ var baseConnHandler = function(channel) {
 
                 case 'echo':
                     responseData = msg.params;
+
+                case 'setName':
+                    meta[channel].clients[socket.id]._name = msg;
             }
             socket.emit(msg.id, responseData);            
         });
