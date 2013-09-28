@@ -17,192 +17,111 @@ io.set('log level', 0); // turn logging down
 io.enable('browser client minification'); // send minified client
 io.enable('browser client etag'); // apply etag caching logic based on version number
 io.enable('browser client gzip'); // gzip the file
-/*
-io.sockets.on("connection", function (socket) {
-    socket.on("echo", function (msg, callback) {
-    	console.log(callback);
-        callback = callback || function () {};
- 
-        socket.emit("echo", msg);
- 		setTimeout(function() { socket.emit("echo", msg); }, 3000);
- 		setTimeout(function() { socket.emit("echo", msg); }, 5000);
-        callback(null, "Done.");
-    });
-});
-*/
-var baseConnHandler = function (socket, channel) {
 
-    var init = function() {
+var baseConnHandler = function(channel) {
 
-        if (meta[channel][socket.id]) {
+    var handler = function (socket) {
+
+        if (meta[channel].clients.hasOwnProperty(socket.id)) {
 
             console.log('ERROR hey id already exists!');
             return;
         }
+        meta[channel].clients[socket.id] = {
 
-        meta[channel][socket.id] = {
+            '_id'       : socket.id,
+            '_start'    : Date.now(),
+            '_channel'  : channel,
+            '_name'      : socket.id,
+            '_modules'  : {
 
-            '_id'    : socket.id,
-            '_start' : Date.now(),
+                'pong'  : {
+
+                    'paddleDirection' : 'up'
+                }
+            }
         };
+        mediator.emit("client:joined", meta[channel].clients[socket.id]);
 
-        console.log("client joined! ");
-        console.log(meta[channel][socket.id]);
-        console.log(Object.keys(meta[channel]).length);
+        socket.on('disconnect', function () {
 
-        mediator.emit("client:joined", meta[channel][socket.id]);
-    };
+            if (! (meta[channel].clients.hasOwnProperty(socket.id))) {
 
-    init();
+                console.log('ERROR  id does not exist!');
+                return;
+            }
+            mediator.emit("client:left", delete meta[channel].clients[socket.id]);
+        });
 
-    socket.on('disconnect', function () {
-        console.log("player: disconnected");
+        socket.on('ping', function () {
 
-        if (! meta[channel][socket.id]) {
+            console.log('ping received from client  ' + socket.id + " " + Date.now());
+        });
 
-            console.log('ERROR  id does not exist!');
-            return;
-        }
+        socket.on("__rpcRequester", function(msg, callback) {
 
-        mediator.emit("client:left", meta[channel][socket.id]);
+            var responseData = "";
 
-        console.log(meta[channel][socket.id]);
-        delete meta[channel][socket.id];
-        console.log(Object.keys(meta[channel]).length);
+            switch (msg.method) {
 
-        //playfield.woosOut(socket.id);
-        //delete players[socket.id];
-    });
+                case 'getTime':
+                    responseData = Date.now();
+                break;
 
+                case 'echo':
+                    responseData = msg.params;
+            }
+            socket.emit(msg.id, responseData);            
+        });
 /*
+        meta[channel].clients[socket.id].pingTimer = setInterval(function() {
 
-    socket.on("echo", function (msg, callback) {
-    	//console.log(callback);
-        callback = callback || function () {};
- 
-        socket.emit("echo", channel + " " + msg);
- 		setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 3000);
- 		setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 5000);
-        callback(null, "Done.");
-    });
-*/
+            socket.emit("ping");
 
-    socket.on("__rpcRequester", function(msg, callback) {
-
-        //console.log("__rpcRequester called ");
-        //console.log(JSON.stringify(msg));
-        var responseData = "";
-
-        switch (msg.method) {
-
-            case 'getTime':
-                responseData = new Date();
-            break;
-
-            case 'echo':
-                responseData = msg.params;
-        }
-        socket.emit(msg.id, responseData);
-        
-    });
-};
-
-var init = function(socket, channel, meta) {
-
-    if (meta[channel][socket.id]) {
-
-        console.log('ERROR hey id already exists!');
-        return;
-    }
-
-    meta[channel][socket.id] = {
-
-        '_id'    : socket.id,
-        '_start' : Date.now(),
-        'channel': channel
+        }, 10000);
+*/        
     };
-
-    mediator.emit("client:joined", meta[channel][socket.id]);
-
-
-    socket.on('disconnect', function () {
-
-        console.log("player: disconnected");
-
-        if (! meta[channel][socket.id]) {
-
-            console.log('ERROR  id does not exist!');
-            return;
-        }
-
-        mediator.emit("client:left", meta[channel][socket.id]);
-        //delete meta[channel][socket.id];
-    });
-
-/*
-
-    socket.on("echo", function (msg, callback) {
-        //console.log(callback);
-        callback = callback || function () {};
- 
-        socket.emit("echo", channel + " " + msg);
-        setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 3000);
-        setTimeout(function() { socket.emit("echo", channel + " " + msg); }, 5000);
-        callback(null, "Done.");
-    });
-*/
-
-    socket.on("__rpcRequester", function(msg, callback) {
-
-        //console.log("__rpcRequester called ");
-        //console.log(JSON.stringify(msg));
-        var responseData = "";
-
-        switch (msg.method) {
-
-            case 'getTime':
-                responseData = new Date();
-            break;
-
-            case 'echo':
-                responseData = msg.params;
-        }
-        socket.emit(msg.id, responseData);
-        
-    });
+    return handler;
 };
 
-var clientHandler = function(socket) {
-
-    init(socket, 'client', meta);
-};
+var userConnHandler         = baseConnHandler('user');
+var dashboardConnHandler    = baseConnHandler('dashboard');
+var consoleConnHandler      = baseConnHandler('console');
 
 var meta = {
 
-    client     : {},
-    dashboard  : {},
-    console    : {}
+    user : {
+
+        clients : {},
+//        timers  : {},
+        socket  : io.of('/user').on('connection', userConnHandler)
+    },
+    dashboard : {
+
+        clients : {},
+//        timers  : {},
+        socket  : io.of('/dashboard').on('connection', dashboardConnHandler)
+    },
+    console : {
+
+        clients : {},
+//        timers  : {},
+        socket  : io.of('/console').on('connection', consoleConnHandler)
+    }
 };
-
-var connections = {
-
-    client 		: io.of('/client').on('connection', 	clientHandler),
-    dashboard 	: io.of('/dashboard').on('connection', 	function(socket) { baseConnHandler(socket, 'dashboard'); }),
-    console 	: io.of('/console').on('connection', 	function(socket) { baseConnHandler(socket, 'admin'); })
-}
 
 mediator.on("client:joined", function(data) {
 
-    console.log("client:joined");
+    console.log(">> EVENT client:joined");
     console.log(JSON.stringify(data));
-    //console.log(Object.keys(meta[data.channel]).length);
+    console.log(data._channel + " clients # " + Object.keys(meta[data._channel].clients).length + "\n");
 })
 
 mediator.on("client:left", function(data) {
 
-    console.log("client:left");
+    console.log(">> EVENT client:left");
     console.log(JSON.stringify(data));
-    //console.log(Object.keys(meta[data.channel]).length);
+    console.log(data._channel + " clients # " + Object.keys(meta[data._channel].clients).length + "\n");
 })
 
 

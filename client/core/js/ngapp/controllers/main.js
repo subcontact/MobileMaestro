@@ -2,14 +2,13 @@
 function dashboard($scope, $log, dashboardService) {
 
 	$log.log('here i am ');
-/*
-	dashboardService.bus.on('echo', function(msg) {
 
-		$log.log("dashboard echo message received: " + msg);
-	})
+	dashboardService.bus.on('ping', function() {
 
-	dashboardService.bus.emit('echo', "Dashboard Hello World");
-*/
+		$log.log("ping received from server " + Date.now());
+		dashboardService.bus.emit('ping');		
+	});
+
 	dashboardService.rpc.getTime().then(function(data) {
 
 		console.log('getTime response : ' + data);
