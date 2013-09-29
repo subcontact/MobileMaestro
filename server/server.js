@@ -31,13 +31,18 @@ var baseConnHandler = function(channel) {
 
             '_id'       : socket.id,
             '_start'    : Date.now(),
+            '_end'      : null,
             '_channel'  : channel,
             '_name'      : socket.id,
             '_modules'  : {
 
                 'pong'  : {
 
-                    'paddleDirection' : 'up'
+                    'paddleDirection' : null
+                },
+                'quiz'  : {
+
+                    'choice' : null
                 }
             }
         };
@@ -50,7 +55,10 @@ var baseConnHandler = function(channel) {
                 console.log('ERROR  id does not exist!');
                 return;
             }
-            mediator.emit("client:left", delete meta[channel].clients[socket.id]);
+            meta[channel].clients[socket.id]._end = Date.now();
+            var client = _.cloneDeep(meta[channel].clients[socket.id]);
+            delete meta[channel].clients[socket.id];
+            mediator.emit("client:left", client);
         });
 
         socket.on('ping', function () {
@@ -70,11 +78,20 @@ var baseConnHandler = function(channel) {
 
                 case 'echo':
                     responseData = msg.params;
+                break;
 
                 case 'setName':
-                    meta[channel].clients[socket.id]._name = msg;
+                    meta[channel].clients[socket.id]._name = msg.params;
+                    responseData = true;
+                    mediator.emit("client:change:name", meta[channel].clients[socket.id]);
+                break;
             }
             socket.emit(msg.id, responseData);            
+        });
+
+        socket.on("client:module:msg", function(data) {
+
+            mediator.emit("client:module:msg", { id: socket.id, data : data });
         });
 /*
         meta[channel].clients[socket.id].pingTimer = setInterval(function() {
@@ -125,6 +142,18 @@ mediator.on("client:left", function(data) {
     console.log(">> EVENT client:left");
     console.log(JSON.stringify(data));
     console.log(data._channel + " clients # " + Object.keys(meta[data._channel].clients).length + "\n");
+})
+
+mediator.on("client:change:name", function(data) {
+
+    console.log(">> EVENT client:change:name");
+    console.log(JSON.stringify(data));
+})
+
+mediator.on("client:module:msg", function(data) {
+
+    console.log(">> EVENT client:module:msg");
+    console.log(JSON.stringify(data));
 })
 
 

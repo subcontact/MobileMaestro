@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/modal.css" />
+    <link rel="stylesheet" type="text/css" href="css/mobile-nav.css" />
+    <link rel="stylesheet" type="text/css" href="css/topcoat-mobile-dark.css">
+    <style>
+    .full {
+        height: 100%;
+        width:100%;
+    }
+    .larger {
+        width: 80%;
+        height: 20%;
+        text-align: center;
+        color: #ffffff;
+        margin: 6px;
+        font-size: 40pt;
+        font-weight: 900;
+    }
+    .activeButton {
+        /* background-color: #1976c3; */
+        background-color: #98011f;
+        -webkit-box-shadow: inset 0 1px rgba(0, 0, 0, 0.12);
+        box-shadow: inset 0 1px rgba(0, 0, 0, 0.12);
+    }
+    
+.activeButton:hover {
+  background-color: #98011f;
+}
+
+.topcoat-navigation-bar {
+  height: 3.375rem;
+}
+.topcoat-navigation-bar__item {
+  margin: 0;
+  line-height: 4rem;
+  vertical-align: top;
+}
+
+
+    </style>
+    <title>Sample</title>
+</head>
+
+<body class="full">
+    <div class="topcoat-navigation-bar">
+        <div class="topcoat-navigation-bar__item center full">
+            <h1 class="topcoat-navigation-bar__title">Quiz</h1>
+        </div>
+    </div>
+    <div>
+    </div>
+    <div class="topcoat-button-list centerize">
+        <p>
+            <button class="md-trigger topcoat-button--large larger" data-choice="a" data-modal="modal-11">A</button>
+        </p>
+        <p>
+            <button class="md-trigger topcoat-button--large larger" data-choice="b" data-modal="modal-11">B</button>
+        </p>
+        <p>
+            <button class="md-trigger topcoat-button--large larger" data-choice="c" data-modal="modal-11">C</button>
+        </p>
+        <p>
+            <button class="md-trigger topcoat-button--large larger" data-choice="d" data-modal="modal-11">D</button>
+        </p>
+    </div>
+        <div class="md-modal md-effect-8" id="modal-11">
+            <div class="md-content">
+                <h3>Correct</h3>
+                <div>
+                    <p>Nice Work</p>
+                    <button class="topcoat-button md-close">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="md-overlay"></div><!-- the overlay element -->    
+    <script src="http://192.168.0.3:8080/target/target-script-min.js#abc"></script>
+    <script src="js/lib/jquery-2.0.3.min.js"></script>
+    <script src="js/lib/util.js"></script>
+
+    <script type="text/javascript">
+    var activeChoice = {
+
+        choice: null,
+        el: null
+    };
+
+    var choiceCommand = function(event) {
+
+        var el = $(event.target);
+        var choice = el.data('choice');
+
+        if ((activeChoice.choice) && (activeChoice.choice === choice)) {
+            // repeat button press - take no action
+            return;
+        }
+        if (activeChoice.el) {
+
+            activeChoice.el.removeClass("activeButton");
+        }
+        activeChoice.el = el;
+        activeChoice.choice = choice;
+        activeChoice.el.addClass("activeButton");
+        console.debug(activeChoice.choice);
+    };
+
+    if (Modernizr.touch) {
+
+        //$(".topcoat-button--large").hammer().on('tap', choiceCommand);
+        $(".topcoat-button--large").on('touchstart', choiceCommand);
+
+    } else {
+
+        $(".topcoat-button--large").on('click', choiceCommand);
+    }
+    </script>
+</body>
+
+</html>

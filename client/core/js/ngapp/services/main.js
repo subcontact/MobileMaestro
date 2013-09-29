@@ -102,6 +102,14 @@ var dashboardService = function($log, $q, $rootScope) {
             var promise = self.rpc.__rpcRequester(service, method, Array.prototype.slice.call(arguments));
             return promise;
         },
+//--------------------------------------------------------------------------------------------------------------------
+        setName : function(name) {
+
+            var service = "dashboard";
+            var method  = "setName";
+            var promise = self.rpc.__rpcRequester(service, method, name);
+            return promise;
+        },
     };
 }
 //--------------------------------------------------------------------------------------------------------------------
