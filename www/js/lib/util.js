@@ -107,11 +107,13 @@ if ( typeof define === 'function' && define.amd ) {
  * Copyright 2013, Codrops
  * http://www.codrops.com
  */
+/*
 var ModalEffects = (function() {
 
 	function init() {
 
 		var overlay = document.querySelector( '.md-overlay' );
+		var ol = document.querySelector( '#ol' );
 
 		[].slice.call( document.querySelectorAll( '.md-trigger' ) ).forEach( function( el, i ) {
 
@@ -134,6 +136,7 @@ var ModalEffects = (function() {
 				classie.add( modal, 'md-show' );
 				overlay.removeEventListener( 'click', removeModalHandler );
 				overlay.addEventListener( 'click', removeModalHandler );
+				ol.addClass('.ol-show');
 
 				if( classie.has( el, 'md-setperspective' ) ) {
 					setTimeout( function() {
@@ -145,6 +148,7 @@ var ModalEffects = (function() {
 			close.addEventListener( 'click', function( ev ) {
 				ev.stopPropagation();
 				removeModalHandler();
+				clearChoice();
 			});
 
 		} );
@@ -154,3 +158,4 @@ var ModalEffects = (function() {
 	init();
 
 })();
+*/
