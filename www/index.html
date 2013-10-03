@@ -70,14 +70,33 @@
         el: null
     };
 
+    var resultClass = {
+
+        CORRECT : 'correct',
+        INCORRECT : 'incorrect'
+    };
+
+    var choices = {
+
+        A   : 'a',
+        B   : 'b',
+        C   : 'c',
+        D   : 'd'
+    };
+
     var closeOverlay = function() {
+
+        $("#modal-8 div").removeClass(resultClass.CORRECT);
+        $("#modal-8 div").removeClass(resultClass.INCORRECT);
 
         $(".md-overlay").removeClass("md-show");
         $("#modal-8").removeClass("md-show");
 
     };
 
-    var openOverlay = function() {
+    var openOverlay = function(result) {
+
+        $("#modal-8 div").addClass(result);
 
         $("#modal-8").addClass("md-show");
         $(".md-overlay").addClass("md-show");
@@ -101,9 +120,13 @@
         activeChoice.el.addClass("activeButton");
         console.debug(activeChoice.choice);
 
-        if (activeChoice.choice === 'd') {
+        if (activeChoice.choice === choices.D) {
 
-            openOverlay();
+            openOverlay(resultClass.INCORRECT);
+        }
+        else if (activeChoice.choice === choices.B) {
+
+            openOverlay(resultClass.CORRECT);
         }
     };
 

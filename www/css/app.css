@@ -83,6 +83,15 @@
         border-bottom: 1px solid #d3d7d7;
     }
 
+.incorrect {
+
+    background: #e74c3c;
+}
+
+.correct {
+
+    background: #50863B;
+}
 
 .md-modal {
     position: fixed;
@@ -140,7 +149,6 @@
 /* Content styles */
 .md-content {
     color: #fff;
-    background: #e74c3c;
     position: relative;
     border-radius: 3px;
     margin: 0 auto;
@@ -201,7 +209,7 @@
     transform: rotateY(-70deg);
     -webkit-transition: all 0.2s;
     -moz-transition: all 0.2s;
-    transition: all 0.2s;
+    transition: all 0.4s;
      opacity: 0; 
 }
 
