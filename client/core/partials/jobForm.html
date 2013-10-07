@@ -1,0 +1,55 @@
+<div class="container">
+    <div class="row-fluid">
+        <div class="span12">
+            <form class="form-horizontal well">
+                <h5 class="heading">Job Info</h5>
+                <div class="control-group">
+                    <label class="control-label" for="jobType">Job Type</label>
+                    <div class="controls">
+                        <input type="text" id="jobType" placeholder="Job Type" ng-model="jobType">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="jobStatus">Job Status</label>
+                    <div class="controls">
+                        <input type="text" id="jobStatus" placeholder="Job Status" ng-model="jobStatus">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="startDate">Start Date</label>
+                    <div class="controls">
+                        <input type="text" id="startDate" placeholder="start date" ng-model="startDate">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="endDate">End Date</label>
+                    <div class="controls">
+                        <input type="text" id="endDate" placeholder="end date" ng-model="endDate">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="id">Id</label>
+                    <div class="controls">
+                        <input type="text" id="id" placeholder=" * NOT SAVED *" ng-model="id">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="docLink">Doc Link</label>
+                    <div class="controls">
+                        <input type="text" id="docLink" placeholder="Documentation Location" ng-model="docLink">
+                    </div>
+                </div>
+                <hr />
+                <div class="btn-group">
+                    <button class="btn btn-primary" ng-click="formSaveHandler()">Save</button>
+                    <button class="btn" ng-click="formCancelHandler()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12 well">
+            <h6>STATUS: {{formStateList[formState]}}</h6>
+        </div>
+    </div>
+</div>

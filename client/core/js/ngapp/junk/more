@@ -1,0 +1,153 @@
+//--------------------------------------------------------------------------------------------------------------------
+var dashboardService = function($log, $q) {
+
+    var socket = io.connect('/dashboard');
+
+    var bus = {
+
+        on : function(eventName, callback) {
+
+            socket.on(eventName, function() {
+
+                if (callback) {
+                    callback.apply(that.socket, arguments);
+                }
+            });
+        },
+
+        emit : function(eventName, data, callback) {
+
+            socket.emit(eventName, data, function() {
+
+                if (callback) {
+                    callback.apply(that.socket, arguments);
+                }
+            });
+        },
+
+        off : function(eventName, callback) {
+
+        },
+
+        offAll : function(eventName) {
+
+        }
+    };
+//--------------------------------------------------------------------------------------------------------------------
+
+    var rpc = {
+
+        __rpcRequester : function(service, method, params) {
+
+            var deferred = $q.defer();
+            var id = '_rpc_' + method + '___' + socket.id;
+            this.bus.on(id, function(data) {
+                deferred.resolve(data);
+            });
+            var data = {
+
+                'service': service,
+                'method' : method,
+                'params' : params,
+                'id'     : id
+            };
+            this.bus.emit(__rpcRequester, data);
+            //setTimeout(5000, function() { deferred.reject(new Error('timeout for : ' + id))});
+            return deferred.promise;
+        },
+
+        getTime : function() {
+
+            var service = "dashboard";
+            var method  = "getTime"
+            return this.__rpcRequester(service, method, Array.prototype.slice.call(arguments, 2));
+        }
+    };
+}
+//--------------------------------------------------------------------------------------------------------------------
+dashboardService.prototype.bus = {
+
+    on : function(eventName, callback) {
+
+        var that = this;
+        this.socket.on(eventName, function() {
+
+            if (callback) {
+                callback.apply(that.socket, arguments);
+            }
+        });
+    },
+
+    emit : function(eventName, data, callback) {
+
+        var that = this;
+        this.socket.emit(eventName, data, function() {
+
+            if (callback) {
+                callback.apply(that.socket, arguments);
+            }
+        });
+    },
+
+    off : function(eventName, callback) {
+
+    },
+
+    offAll : function(eventName) {
+
+    }
+};
+
+dashboardService.prototype.rpc = {
+
+    that : this,
+
+    __rpcRequester : function(service, method, params) {
+
+        var deferred = that.$q.defer();
+        var id = '_rpc_' + method + '___' + socket.id;
+        this.bus.on(id, function(data) {
+            deferred.resolve(data);
+        });
+        var data = {
+
+            'service': service,
+            'method' : method,
+            'params' : params,
+            'id'     : id
+        };
+        this.bus.emit(__rpcRequester, data);
+        //setTimeout(5000, function() { deferred.reject(new Error('timeout for : ' + id))});
+        return deferred.promise;
+    },
+
+    getTime : function() {
+
+        var service = "dashboard";
+        var method  = "getTime"
+        return this.__rpcRequester(service, method, Array.prototype.slice.call(arguments, 2));
+    }
+
+}
+//--------------------------------------------------------------------------------------------------------------------
+dashboardService.prototype.on = function(eventName, callback) {
+
+    var that = this;
+    this.socket.on(eventName, function() {
+
+        if (callback) {
+            callback.apply(that.socket, arguments);
+        }
+    });
+};
+//--------------------------------------------------------------------------------------------------------------------
+dashboardService.prototype.emit = function(eventName, data, callback) {
+
+    var that = this;
+    this.socket.emit(eventName, data, function() {
+
+        if (callback) {
+            callback.apply(that.socket, arguments);
+        }
+    });
+};
