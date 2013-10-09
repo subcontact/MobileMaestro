@@ -1,0 +1,154 @@
+
+    <!--    
+	<style>
+
+		.step {
+			position:relative;
+			overflow:hidden;
+			opacity:.4;
+
+			-webkit-transition: opacity 1s;
+			-moz-transition:    opacity 1s;
+			-ms-transition:     opacity 1s;
+			-o-transition:      opacity 1s;
+			transition:         opacity 1s;
+		}
+
+
+
+		.step.active {
+			opacity:.6;
+		}
+
+		.step:nth-child(6n) {
+			background:red;
+		}
+
+		.step:nth-child(6n + 1) {
+			background:green;
+		}
+
+		.step:nth-child(6n + 2) {
+			background:blue;
+		}
+
+		.step:nth-child(6n + 3) {
+			background:cyan;
+		}
+
+		.step:nth-child(6n + 4) {
+			background:magenta;
+		}
+
+		.step:nth-child(6n + 5) {
+			background:yellow;
+		}
+		#overview {
+			display:none;
+		}
+	</style>
+-->
+<!-- <body ng-controller="MainController">
+	<div data-impress impress-data="steps" impress-enter="onEnter()" impress-leave="onLeave()" id="impress">
+		<div ng-controller="DonationsController">
+			<div ng-repeat="donation in donations" data-impress-step="donation.id" impress-x="donation.x" impress-y="donation.y" impress-z="donation.z" impress-rotate-y="donation.rotation">
+				{{donation | json}}
+			</div>
+		</div>
+	</div>
+	<script src="assets/lib/requirejs/require-2.1.8.js" data-main="assets/js/main"></script>
+</body>
+</html> -->
+
+
+    <script type="text/javascript">
+    var activeChoice = {
+
+        choice: null,
+        el: null
+    };
+
+    var resultClass = {
+
+        CORRECT : 'correct',
+        INCORRECT : 'incorrect'
+    };
+
+    var choices = {
+
+        A   : 'a',
+        B   : 'b',
+        C   : 'c',
+        D   : 'd'
+    };
+
+    var closeOverlay = function() {
+
+        $("#modal-8 div").removeClass(resultClass.CORRECT);
+        $("#modal-8 div").removeClass(resultClass.INCORRECT);
+
+        $(".md-overlay").removeClass("md-show");
+        $("#modal-8").removeClass("md-show");
+
+    };
+
+    var openOverlay = function(result) {
+
+        $("#modal-8 div").addClass(result);
+
+        $("#modal-8").addClass("md-show");
+        $(".md-overlay").addClass("md-show");
+    };
+
+    var choiceCommand = function(event) {
+
+        var el = $(event.target);
+        var choice = el.data('choice');
+
+        if ((activeChoice.choice) && (activeChoice.choice === choice)) {
+            // repeat button press - take no action
+            return;
+        }
+        if (activeChoice.el) {
+
+            activeChoice.el.removeClass("activeButton");
+        }
+        activeChoice.el = el;
+        activeChoice.choice = choice;
+        activeChoice.el.addClass("activeButton");
+        console.debug(activeChoice.choice);
+
+        if (activeChoice.choice === choices.D) {
+
+            openOverlay(resultClass.INCORRECT);
+        }
+        else if (activeChoice.choice === choices.B) {
+
+            openOverlay(resultClass.CORRECT);
+        }
+    };
+
+    var clearChoice = function() {
+
+        if (activeChoice.choice) {
+
+            activeChoice.el.removeClass("activeButton");
+            activeChoice.el = null;
+            activeChoice.choice = null;
+        }
+    }
+
+    if (Modernizr.touch) {
+
+        //$(".topcoat-button--large").hammer().on('tap', choiceCommand);
+        $(".topcoat-button--large").on('touchstart', choiceCommand);
+        $(".md-close").on('touchstart', closeOverlay);
+
+    } else {
+
+        $(".topcoat-button--large").on('click', choiceCommand);
+        $(".md-close").on('click', closeOverlay);
+    }
+
+    setTimeout(function() { openOverlay(); }, 2000);
+    </script>

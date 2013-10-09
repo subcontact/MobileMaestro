@@ -1,0 +1,10 @@
+{
+  "enableDonationSystem" : true,
+  "enableSilentAuction" : true,
+  "theme" : "WBC",
+  "dashboardScript" : [
+  	"donation",
+  	"silentAuction"
+  ],
+  "runScript" : true
+}

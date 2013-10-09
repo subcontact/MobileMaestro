@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+	<head>
+	    <meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+	    <meta name="apple-mobile-web-app-capable" content="yes" />
+	    <title>Westpac</title>
+	    <link rel="stylesheet" type="text/css" href="assets/css/topcoat-mobile-dark.css">
+	    <link rel="stylesheet" type="text/css" href="assets/css/topcoat-mobile-dark.min.css">
+	    <link rel="stylesheet" type="text/css" href="assets/css/app.css">
+	</head>
+
+	<body>
+		<script type="text/ng-template" id="quiz-main-choice.html"> 
+		    <div class="full" ng-controller="QuizMainChoiceController">
+		    
+		        <div class="topcoat-navigation-bar">
+		            <div class="topcoat-navigation-bar__item center full">
+		                <h1 class="topcoat-navigation-bar__title">Quiz</h1>
+		            </div>
+		        </div>
+		        <div class="topcoat-button-list centerize">
+		            <p>
+		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="A">A</button>
+		            </p>
+		            <p>
+		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="B">B</button>
+		            </p>
+		            <p>
+		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="C">C</button>
+		            </p>
+		            <p>
+		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="D">D</button>
+		            </p>
+		            <p>
+		                <button class="topcoat-button--large larger" ng-click="fireChoiceResponseDebug()">Trigger Response</button>
+		            </p>
+		        </div>
+		        <div class="md-overlay"></div>
+		        <div overlay overlay-show="overlayShow" class="md-modal md-effect-8" id="modal-8">
+		            <div class="md-content">
+		                <h3>{{$parent.resultMessage}}</h3>
+		                <div>
+		                    <p>{{$parent.resultComment}}</p>
+		                    <button ng-click="$parent.setResult(null)" class="topcoat-button--cta">Close</button>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</script> 
+		<ng-include src="'quiz-main-choice.html'"></ng-include> 
+		<script src="assets/lib/requirejs/require-2.1.8.js" data-main="assets/js/main"></script>
+	</body>
+
+</html>
+
+

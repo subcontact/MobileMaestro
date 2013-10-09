@@ -9,6 +9,8 @@
         "lodash": "2.0.x",
         "q": "0.9.7",
         "async": "0.2.x",
-        "mediator-js": "0.9.x"
+        "mediator-js": "0.9.x",
+        "postal": "0.8.x",
+        "underscore": "*"
     }
 }

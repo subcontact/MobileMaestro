@@ -1,0 +1,21 @@
+[ { "_id" : 1,
+    "auctionItemName" : "An Item With Bids",
+    "auctionOpen" : true,
+    "currentBid" : 200,
+    "currentBidder" : "No one has currently bid for this item.",
+    "hasImage" : "true",
+    "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/auctionItem/1",
+    "minimumIncrement" : 100,
+    "startPrice" : 200
+  },
+  { "_id" : 2,
+    "auctionItemName" : "Another Auction Item",
+    "auctionOpen" : true,
+    "currentBid" : 200,
+    "currentBidder" : "No one has currently bid for this item.",
+    "hasImage" : "false",
+    "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/auctionItem/2",
+    "minimumIncrement" : 100,
+    "startPrice" : 200
+  }
+]

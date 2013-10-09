@@ -65,6 +65,22 @@ var baseConnHandler = function(channel) {
 
             console.log('ping received from client  ' + socket.id + " " + Date.now());
         });
+        socket.on('quiz:user:setChoice', function (data) {
+
+            console.log('quiz:user:setChoice received from user  ' + socket.id + " " + Date.now());
+            console.log(data.choice);
+
+            setTimeout(function() {
+
+                socket.emit('quiz:server:lockChoice');
+            }, 3000);
+
+            setTimeout(function() {
+
+//                socket.emit('quiz:server:unlockChoice');
+                socket.emit('quiz:server:answer', {answer:'B'});
+            }, 6000);
+        });
 
         socket.on("__rpcRequester", function(msg, callback) {
 
