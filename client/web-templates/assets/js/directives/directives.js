@@ -8,10 +8,8 @@ define(['angular', '_'], function(angular, _) {
 
         	scope.$watch('dialogState', function(value, oldValue) {
 
-        		if (value === oldValue) {return}
-
+        		//if (value === oldValue) {return}
 				_.forOwn(scope.dialogStateList, function(value) {
-
 					content.removeClass(value);
 				});
 
@@ -21,7 +19,6 @@ define(['angular', '_'], function(angular, _) {
 			        blocker.addClass("md-show");
 
         		} else {
-
 			        element.removeClass("md-show");
 			        blocker.removeClass("md-show");
         		}

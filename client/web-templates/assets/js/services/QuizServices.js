@@ -33,7 +33,6 @@ define(['angular', 'socketio'], function(angular, socketio){
 	        offAll : function(eventName) {
 	        },
 	//--------------------------------------------------------------------------------------------------------------------
-			
 			onResult : function(callback, context) {
 			    self.bus.on('quiz:server:result', function(data) {
 	                if (callback) {

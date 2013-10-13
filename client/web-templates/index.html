@@ -20,19 +20,19 @@
 		            </div>
 		        </div>
 		        <div class="topcoat-button-list centerize">
-		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'A'}" ng-click="setChoice('A')">A</button></p>
-		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'B'}" ng-click="setChoice('B')">B</button></p>
-		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'C'}" ng-click="setChoice('C')">C</button></p>
-		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'D'}" ng-click="setChoice('D')">D</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'A'}" ng-click="setChoiceState('A')">A</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'B'}" ng-click="setChoiceState('B')">B</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'C'}" ng-click="setChoiceState('C')">C</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'D'}" ng-click="setChoiceState('D')">D</button></p>
 		            <p><button class="topcoat-button--large larger" ng-click="fireLockResponseDebug()">Trigger</button></p>
-		            <p><button class="topcoat-button--large larger" ng-click="setChoice(choiceStateList.NULL)">Reset Choice</button></p>
+		            <p><button class="topcoat-button--large larger" ng-click="setChoiceState(choiceStateList.NULL)">Reset Choice</button></p>
 		        </div>
 		        <div class="md-blocker"></div>
 		        <dialog dialog-state="dialogState" dialog-state-list="dialogStateList" class="md-modal md-effect-spin">
 		            <div class="md-content">
-		                <h3>{{$parent.resultMessage}}</h3>
+		                <h3>{{$parent.dialogMessage}}</h3>
 		                <div>
-		                    <p>{{$parent.resultComment}}</p>
+		                    <p>{{$parent.dialogComment}}</p>
 		                    <!-- <button ng-click="$parent.setResult(null)" class="topcoat-button--cta">Close</button> -->
 		                </div>
 		            </div>

@@ -2,8 +2,8 @@ define(['angular'], function(angular){
 
 	function QuizMainChoiceController($scope, $timeout, $log, QuizServices){
 
-		$scope.resultMessage 	= '';
-		$scope.resultComment 	= '';
+		$scope.dialogMessage 	= '';
+		$scope.dialogComment 	= '';
 
 	    $scope.dialogStateList = {
 
@@ -53,11 +53,16 @@ define(['angular'], function(angular){
 
 	    $scope.$watch('appState', function(value, oldValue) {
 
-	    	console.log('appState changed : ' + value);
-
-	    	if (value === oldValue) {return}
-
-	    	if (value === $scope.appStateList.RESULT) {
+	    	console.log('appState changed : ' + value + ' ' + oldValue);
+	    	//if (value !== $scope.appStateList.INIT && value === oldValue) {return}
+	    	if (_.contains([$scope.appStateList.INIT, $scope.appStateList.START], value)) {
+	    		$timeout(function() { // timeout to apply styles on the next cycle and give time to animate the dialog to open
+					$scope.dialogMessage 	= 'Waiting To Start';
+					$scope.dialogComment 	= '';
+		    		$scope.dialogState 		= $scope.dialogStateList.LOCKED;
+	    		})
+	    	}
+	    	else if (value === $scope.appStateList.RESULT) {
 
 	    		$scope.dialogState = $scope.resultState;
 	    	}
@@ -74,7 +79,7 @@ define(['angular'], function(angular){
 			$scope.appState = state;
 		}
 
-		$scope.setChoice = function(choice) {
+		$scope.setChoiceState = function(choice) {
 
 			if ($scope.appState === $scope.appStateList.OPEN) {
 
@@ -85,21 +90,23 @@ define(['angular'], function(angular){
 			}
 		}
 
-		$scope.setResult = function(result) {
+		$scope.setResultState = function(result) {
 
 			if (_.contains([$scope.appStateList.OPEN, $scope.appStateList.LOCKED, $scope.appStateList.RESULT], $scope.appState)) {
 
 				$scope.setAppState($scope.appStateList.RESULT);
-				if (result === $scope.resultStateList.CORRECT) {
+	    		//$timeout(function() { // timeout to apply styles on the next cycle and give time to animate the dialog to open
+					if (result === $scope.resultStateList.CORRECT) {
 
-					$scope.resultState 		= $scope.resultStateList.CORRECT;
-					$scope.resultMessage 	= 'Correct';
-					$scope.resultComment 	= 'Nice Work!';
-				} else {
-					$scope.resultState 		= $scope.resultStateList.INCORRECT;
-					$scope.resultMessage 	= 'Incorrect';
-					$scope.resultComment 	= 'Pfft No!';
-				}
+						$scope.resultState 		= $scope.resultStateList.CORRECT;
+						$scope.dialogMessage 	= 'Correct';
+						$scope.dialogComment 	= 'Nice Work!';
+					} else {
+						$scope.resultState 		= $scope.resultStateList.INCORRECT;
+						$scope.dialogMessage 	= 'Incorrect';
+						$scope.dialogMessage 	= 'Pfft No!';
+					}
+				//});
 			}
 			else {
 				console.log('ERROR - cannot set result in current appState ' + $scope.appState);
@@ -111,23 +118,20 @@ define(['angular'], function(angular){
 			if ($scope.appState === $scope.appStateList.OPEN) {
 
 				$scope.setAppState($scope.appStateList.LOCKED);
-				$scope.updateResultMessages();
+	    		//$timeout(function() { // timeout to apply styles on the next cycle and give time to animate the dialog to open
+					if ($scope.choiceState === $scope.choiceStateList.NULL) {
+
+						$scope.dialogMessage = '';
+						$scope.dialogMessage = 'No Choice Made';
+					}
+					else {
+						$scope.dialogMessage = 'Locked In';
+						$scope.dialogMessage = 'You Chose ' + $scope.choiceState;
+					}
+				//});
 			}
 			else {
 				console.log('ERROR - cannot set to LOCK in current appState ' + $scope.appState);
-			}
-		};
-
-		$scope.updateResultMessages = function() {
-
-			if ($scope.choiceState === $scope.choiceStateList.NULL) {
-
-				$scope.resultComment = '';
-				$scope.resultMessage = 'No Choice Made';
-			}
-			else {
-				$scope.resultComment = 'Locked In';
-				$scope.resultMessage = 'You Chose ' + $scope.choiceState;
 			}
 		};
 
@@ -153,19 +157,19 @@ define(['angular'], function(angular){
 				$timeout(function() {
 
 					$scope.unLockChoice();
-					$scope.setChoice($scope.choiceStateList.NULL);
+					$scope.setChoiceState($scope.choiceStateList.NULL);
 				}, 3000);
 
 			});
 		}
 
 		$scope.fireChoiceResponseDebug = function() {
-			$scope.setResult([$scope.resultStateList.CORRECT,$scope.resultStateList.INCORRECT][Math.round(Math.random())]);
+			$scope.setResultState([$scope.resultStateList.CORRECT,$scope.resultStateList.INCORRECT][Math.round(Math.random())]);
 		}
 
 		QuizServices.bus.onNext(function(data) {
 			$scope.setAppState($scope.appStateList.OPEN);
-			$scope.setChoice($scope.choiceStateList.NULL);
+			$scope.setChoiceState($scope.choiceStateList.NULL);
 		}, this);
 
 		QuizServices.bus.onLock(function(data) {
@@ -173,7 +177,7 @@ define(['angular'], function(angular){
 		}, this);
 
 		QuizServices.bus.onResult(function(data) {
-			$scope.setResult([$scope.resultStateList.CORRECT,$scope.resultStateList.INCORRECT][Math.round(Math.random())]);
+			$scope.setResultState([$scope.resultStateList.CORRECT,$scope.resultStateList.INCORRECT][Math.round(Math.random())]);
 		}, this);
 	}
 
