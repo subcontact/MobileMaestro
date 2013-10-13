@@ -1,163 +1,180 @@
 define(['angular'], function(angular){
 
-
 	function QuizMainChoiceController($scope, $timeout, $log, QuizServices){
 
-		$scope.overlayShow		= null;
 		$scope.resultMessage 	= '';
 		$scope.resultComment 	= '';
-		$scope.activeChoice 	= null;
-		$scope.submissionsOpen	= true;
 
-	    var choices = {
+	    $scope.dialogStateList = {
 
-	        A   : 'A',
-	        B   : 'B',
-	        C   : 'C',
-	        D   : 'D'
+	    	NULL 		: null,
+	        CORRECT 	: 'correct',
+	        INCORRECT 	: 'incorrect',
+	        LOCKED	  	: 'lockChoice'
+	    };
+	    $scope.dialogState = $scope.dialogStateList.NULL;
+
+	    $scope.appStateList = {
+
+	    	INIT	: 'INIT',
+	    	START	: 'START',
+	    	OPEN 	: 'OPEN',
+	    	LOCKED  : 'LOCKED',
+	    	RESULT 	: 'RESULT',
+	    	CLOSED  : 'CLOSED',
+	    	DESTROY : 'DESTROY'
+	    };
+	    $scope.appState = $scope.appStateList.INIT;
+
+	    $scope.choiceStateList = {
+
+	    	NULL 	: null,
+	        A   	: 'A',
+	        B   	: 'B',
+	        C   	: 'C',
+	        D   	: 'D'
+	    };
+	    $scope.choiceState = null;
+
+	    $scope.resultStateList = {
+
+	    	NULL 		: null,
+	    	CORRECT 	: 'correct',
+	    	INCORRECT 	: 'incorrect'
+	    }
+	    $scope.resultState = $scope.resultStateList.NULL;
+
+	    $scope.quizProgress = {
+
+	    	total 	: null,
+	    	current : null,
+	    	score	: null
 	    };
 
-	    $scope.$watch('submissionsOpen', function(value) {
+	    $scope.$watch('appState', function(value, oldValue) {
 
-	    	console.log('submissionsOpen check');
-	    	console.log($scope.submissionsOpen);
+	    	console.log('appState changed : ' + value);
 
-	    	if (value === false) {
+	    	if (value === oldValue) {return}
 
-	    		$scope.lockChoice();
-	    	} else {
+	    	if (value === $scope.appStateList.RESULT) {
 
-	    		$scope.unLockChoice();
+	    		$scope.dialogState = $scope.resultState;
+	    	}
+	    	else if (value === $scope.appStateList.LOCKED) {
+
+	    		$scope.dialogState 	= $scope.dialogStateList.LOCKED;
+	    	}
+	    	else {
+	    		$scope.dialogState = $scope.resultStateList.NULL;
 	    	}
 	    });
 
-	    $scope.$watch('activeChoice', function(value) {
+		$scope.setAppState = function(state) {
+			$scope.appState = state;
+		}
 
-	    	console.log('activeChoice changed');
-	    	console.log($scope.activeChoice);
+		$scope.setChoice = function(choice) {
 
-	    	if (value !== null) {
+			if ($scope.appState === $scope.appStateList.OPEN) {
 
-	    		QuizServices.bus.emit('quiz:user:setChoice', { 'choice' : $scope.activeChoice});
-	    	} 
-	    });
-
-	    $scope.$on('quiz:setChoice', function(event, value) {
-
-	    	console.log('activeChoice changed');
-	    	console.log($scope.activeChoice);
-	    	console.log(value);
-
-	    	if (value !== null) {
-
-	    		QuizServices.bus.emit('quiz:user:setChoice', { 'choice' : value});
-	    	} 
-	    });
-/*
-	    $timeout(function() {
-
-	    	$scope.submissionsOpen = false;
-
-	    },12000)
-
-	    $timeout(function() {
-
-	    	$scope.submissionsOpen = true;
-
-	    },20000)
-
-		$timeout(function() {
-			$scope.resetChoice();
-		},4000);
-
-		$timeout(function() {
-			QuizServices.lockChoice();
-		},3000);
-*/
-
-	QuizServices.bus.on('quiz:server:lockChoice', function() {
-
-		$scope.$apply(function() {
-			$log.log("quiz:server:lockChoice received from server " + Date.now());
-			$scope.submissionsOpen = false;	
-		});
-
-	});
-
-	QuizServices.bus.on('quiz:server:unlockChoice', function() {
-
-		$scope.$apply(function() {
-			$log.log("quiz:server:unlockChoice received from server " + Date.now());
-			$scope.submissionsOpen = true;
-		});	
-	});
-
-	QuizServices.bus.on('quiz:server:answer', function(data) {
-
-		$scope.$apply(function() {
-			$log.log("quiz:server:answer received from server " + Date.now());
-			$scope.setResult( data.answer === $scope.activeChoice ? 'correct' : 'incorrect');
-		});	
-	});
-
-
-	QuizServices.bus.on('ping', function() {
-
-		$log.log("ping received from server " + Date.now());
-		QuizServices.bus.emit('ping');		
-	});
-
-	QuizServices.bus.emit('ping');
-
-	QuizServices.rpc.getTime().then(function(data) {
-
-		console.log('getTime response : ' + data);
-	});
-
-	QuizServices.rpc.echo('one two three', 'abc', 5).then(function(data) {
-
-		console.log('echo response : ' + data);
-	});
-
-
-		$scope.resetChoice = function() {
-
-			$scope.activeChoice = null;
-			$scope.$broadcast('quiz:resetChoice', $scope.activeChoice);
+				$scope.choiceState = choice;
+			}
+			else {
+				console.log('ERROR - cannot set choice in current appState ' + $scope.appState);
+			}
 		}
 
 		$scope.setResult = function(result) {
 
-			if (result === 'correct') {
+			if (_.contains([$scope.appStateList.OPEN, $scope.appStateList.LOCKED, $scope.appStateList.RESULT], $scope.appState)) {
 
-				$scope.resultMessage = 'Correct';
-				$scope.resultComment = 'Nice Work!';
+				$scope.setAppState($scope.appStateList.RESULT);
+				if (result === $scope.resultStateList.CORRECT) {
 
-			} else if (result === 'incorrect') {
-
-				$scope.resultMessage = 'Incorrect';
-				$scope.resultComment = 'Pfft No!';
+					$scope.resultState 		= $scope.resultStateList.CORRECT;
+					$scope.resultMessage 	= 'Correct';
+					$scope.resultComment 	= 'Nice Work!';
+				} else {
+					$scope.resultState 		= $scope.resultStateList.INCORRECT;
+					$scope.resultMessage 	= 'Incorrect';
+					$scope.resultComment 	= 'Pfft No!';
+				}
 			}
-			$scope.overlayShow = result;
+			else {
+				console.log('ERROR - cannot set result in current appState ' + $scope.appState);
+			}
 		}
 
 		$scope.lockChoice = function() {
 
+			if ($scope.appState === $scope.appStateList.OPEN) {
 
-			$scope.resultComment = 'Locked In';
-			$scope.resultMessage = 'You Chose ' + $scope.activeChoice;
-			$scope.overlayShow 	 = 'lockChoice';
+				$scope.setAppState($scope.appStateList.LOCKED);
+				$scope.updateResultMessages();
+			}
+			else {
+				console.log('ERROR - cannot set to LOCK in current appState ' + $scope.appState);
+			}
+		};
+
+		$scope.updateResultMessages = function() {
+
+			if ($scope.choiceState === $scope.choiceStateList.NULL) {
+
+				$scope.resultComment = '';
+				$scope.resultMessage = 'No Choice Made';
+			}
+			else {
+				$scope.resultComment = 'Locked In';
+				$scope.resultMessage = 'You Chose ' + $scope.choiceState;
+			}
 		};
 
 		$scope.unLockChoice = function() {
 
-			$scope.overlayShow 	 = null;
+			if (_.contains([$scope.appStateList.LOCKED, $scope.appStateList.RESULT], $scope.appState)) {
+
+				$scope.setAppState($scope.appStateList.OPEN);
+			}
+			else {
+				console.log('ERROR - cannot set to UnLock in current appState ' + $scope.appState);
+			}
 		};
 
-		$scope.fireChoiceResponseDebug = function() {
+		$scope.fireLockResponseDebug = function() {
 
-			$scope.setResult(['correct','incorrect'][Math.round(Math.random())]);
+			$scope.lockChoice();
+			$timeout(function() {
+
+				$scope.fireChoiceResponseDebug();
+			}, 3000).then(function() {
+
+				$timeout(function() {
+
+					$scope.unLockChoice();
+					$scope.setChoice($scope.choiceStateList.NULL);
+				}, 3000);
+
+			});
 		}
+
+		$scope.fireChoiceResponseDebug = function() {
+			$scope.setResult([$scope.resultStateList.CORRECT,$scope.resultStateList.INCORRECT][Math.round(Math.random())]);
+		}
+
+		QuizServices.bus.onNext(function(data) {
+			$scope.setAppState($scope.appStateList.OPEN);
+			$scope.setChoice($scope.choiceStateList.NULL);
+		}, this);
+
+		QuizServices.bus.onLock(function(data) {
+			$scope.lockChoice();
+		}, this);
+
+		QuizServices.bus.onResult(function(data) {
+			$scope.setResult([$scope.resultStateList.CORRECT,$scope.resultStateList.INCORRECT][Math.round(Math.random())]);
+		}, this);
 	}
 
 	angular.extend(QuizMainChoiceController, {

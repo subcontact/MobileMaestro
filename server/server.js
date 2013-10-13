@@ -78,9 +78,30 @@ var baseConnHandler = function(channel) {
             setTimeout(function() {
 
 //                socket.emit('quiz:server:unlockChoice');
-                socket.emit('quiz:server:answer', {answer:'B'});
+                socket.emit('quiz:server:result', {answer:'B'});
             }, 6000);
         });
+
+        setTimeout(function() {
+
+            socket.emit('quiz:server:next');
+        }, 2000);
+
+        setTimeout(function() {
+
+            socket.emit('quiz:server:lock');
+        }, 4000);
+
+        setTimeout(function() {
+
+            socket.emit('quiz:server:result', {answer:'B'});
+        }, 6000);
+
+        setTimeout(function() {
+
+            socket.emit('quiz:server:next');
+        }, 8000);
+
 
         socket.on("__rpcRequester", function(msg, callback) {
 

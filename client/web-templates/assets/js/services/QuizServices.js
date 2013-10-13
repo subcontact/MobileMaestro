@@ -1,16 +1,4 @@
 define(['angular', 'socketio'], function(angular, socketio){
-
-/*
-	function QuizServices() {
-
-	}
-	QuizServices.prototype.lockChoice =	function() { console.log('lockchoice')}
-	QuizServices.prototype.setChoice =	function() {}
-	QuizServices.prototype.result = function() {}
-	QuizServices.prototype.reset = function() {} 
-
-	//return new QuizServices();
-*/
 	//--------------------------------------------------------------------------------------------------------------------
 	var QuizServices = function($log, $q, $rootScope) {
 
@@ -20,32 +8,55 @@ define(['angular', 'socketio'], function(angular, socketio){
 	    this.bus = {
 
 	        on : function(eventName, callback) {
-
-	            socket.on(eventName, function() {
-
-	                if (callback) {
-	                    callback.apply(socket, arguments);
-	                }
+	            socket.on(eventName, function(data) {
+					$rootScope.$apply(function() {
+		                if (callback) {
+		                    callback.call(socket, data);
+		                }
+		            });
 	            });
 	        },
 
 	        emit : function(eventName, data, callback) {
-
-	            socket.emit(eventName, data, function() {
-
-	                if (callback) {
-	                    callback.apply(socket, arguments);
-	                }
+	            socket.emit(eventName, data, function(data) {
+					$rootScope.$apply(function() {
+		                if (callback) {
+		                    callback.call(socket, data);
+		                }
+		            });
 	            });
 	        },
 
 	        off : function(eventName, callback) {
-
 	        },
 
 	        offAll : function(eventName) {
-
-	        }
+	        },
+	//--------------------------------------------------------------------------------------------------------------------
+			
+			onResult : function(callback, context) {
+			    self.bus.on('quiz:server:result', function(data) {
+	                if (callback) {
+	                    callback.call(context, data);
+	                }
+			    });
+			},
+	//--------------------------------------------------------------------------------------------------------------------
+			onLock : function(callback, context) {
+			    self.bus.on('quiz:server:lock', function(data) {
+	                if (callback) {
+	                    callback.call(context, data);
+	                }
+			    });
+			},	        
+	//--------------------------------------------------------------------------------------------------------------------
+			onNext : function(callback, context) {
+			    self.bus.on('quiz:server:next', function(data) {
+	                if (callback) {
+	                    callback.call(context, data);
+	                }
+			    });
+			},	        
 	    };
 	//--------------------------------------------------------------------------------------------------------------------
 	    this.rpc = {
@@ -55,10 +66,10 @@ define(['angular', 'socketio'], function(angular, socketio){
 	            var deferred = $q.defer();
 	            var id = '_rpc_' + method + '___' + '_response_' + new Date().getTime(); // + '___' + socket.sessionid;
 	            self.bus.on(id, function(data) {
-	                $rootScope.$apply(function() {
+	                //$rootScope.$apply(function() {
 
 	                    deferred.resolve(data);
-	                });
+	                //});
 	            });
 	            var data = {
 
@@ -98,11 +109,7 @@ define(['angular', 'socketio'], function(angular, socketio){
 	        },
 	    };
 	}
-
 	return angular.module('QuizServices', []).service('QuizServices', QuizServices);
-
 });
-
-
 //--------------------------------------------------------------------------------------------------------------------
 

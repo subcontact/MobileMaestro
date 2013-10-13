@@ -20,32 +20,23 @@
 		            </div>
 		        </div>
 		        <div class="topcoat-button-list centerize">
-		            <p>
-		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="A">A</button>
-		            </p>
-		            <p>
-		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="B">B</button>
-		            </p>
-		            <p>
-		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="C">C</button>
-		            </p>
-		            <p>
-		                <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="D">D</button>
-		            </p>
-		            <p>
-		                <button class="topcoat-button--large larger" ng-click="fireChoiceResponseDebug()">Trigger Response</button>
-		            </p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'A'}" ng-click="setChoice('A')">A</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'B'}" ng-click="setChoice('B')">B</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'C'}" ng-click="setChoice('C')">C</button></p>
+		            <p><button class="topcoat-button--large larger" ng-class="{activeButton : choiceState == 'D'}" ng-click="setChoice('D')">D</button></p>
+		            <p><button class="topcoat-button--large larger" ng-click="fireLockResponseDebug()">Trigger</button></p>
+		            <p><button class="topcoat-button--large larger" ng-click="setChoice(choiceStateList.NULL)">Reset Choice</button></p>
 		        </div>
-		        <div class="md-overlay"></div>
-		        <div overlay overlay-show="overlayShow" class="md-modal md-effect-8" id="modal-8">
+		        <div class="md-blocker"></div>
+		        <dialog dialog-state="dialogState" dialog-state-list="dialogStateList" class="md-modal md-effect-spin">
 		            <div class="md-content">
 		                <h3>{{$parent.resultMessage}}</h3>
 		                <div>
 		                    <p>{{$parent.resultComment}}</p>
-		                    <button ng-click="$parent.setResult(null)" class="topcoat-button--cta">Close</button>
+		                    <!-- <button ng-click="$parent.setResult(null)" class="topcoat-button--cta">Close</button> -->
 		                </div>
 		            </div>
-		        </div>
+		        </dialog>
 		    </div>
 		</script> 
 		<ng-include src="'quiz-main-choice.html'"></ng-include> 
