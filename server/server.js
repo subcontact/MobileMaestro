@@ -46,7 +46,7 @@ var baseConnHandler = function(channel) {
                 }
             }
         };
-        mediator.emit("client:joined", meta[channel].clients[socket.id]);
+        mediator.emit(channel + ":joined", meta[channel].clients[socket.id]);
 
         socket.on('disconnect', function () {
 
@@ -58,13 +58,14 @@ var baseConnHandler = function(channel) {
             meta[channel].clients[socket.id]._end = Date.now();
             var client = _.cloneDeep(meta[channel].clients[socket.id]);
             delete meta[channel].clients[socket.id];
-            mediator.emit("client:left", client);
+            mediator.emit(channel + ":left", client);
         });
 
         socket.on('ping', function () {
 
             console.log('ping received from client  ' + socket.id + " " + Date.now());
         });
+
         socket.on('quiz:user:setChoice', function (data) {
 
             console.log('quiz:user:setChoice received from user  ' + socket.id + " " + Date.now());
@@ -167,29 +168,35 @@ var meta = {
     }
 };
 
-mediator.on("client:joined", function(data) {
+mediator.on("user:joined", function(data) {
 
-    console.log(">> EVENT client:joined");
+    console.log(">> EVENT user:joined");
     console.log(JSON.stringify(data));
     console.log(data._channel + " clients # " + Object.keys(meta[data._channel].clients).length + "\n");
+
+    meta.dashboard.socket.emit("user:joined", data);
+    meta.console.socket.emit("user:joined", data);
 })
 
-mediator.on("client:left", function(data) {
+mediator.on("user:left", function(data) {
 
-    console.log(">> EVENT client:left");
+    console.log(">> EVENT user:left");
     console.log(JSON.stringify(data));
     console.log(data._channel + " clients # " + Object.keys(meta[data._channel].clients).length + "\n");
+
+    meta.dashboard.socket.emit("user:joined", data);
+    meta.console.socket.emit("user:joined", data);
 })
 
-mediator.on("client:change:name", function(data) {
+mediator.on("user:change:name", function(data) {
 
-    console.log(">> EVENT client:change:name");
+    console.log(">> EVENT user:change:name");
     console.log(JSON.stringify(data));
 })
 
-mediator.on("client:module:msg", function(data) {
+mediator.on("user:module:msg", function(data) {
 
-    console.log(">> EVENT client:module:msg");
+    console.log(">> EVENT user:module:msg");
     console.log(JSON.stringify(data));
 })
 
