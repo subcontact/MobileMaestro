@@ -144,7 +144,7 @@ var baseConnHandler = function(channel) {
 
 var userConnHandler         = baseConnHandler('user');
 var dashboardConnHandler    = baseConnHandler('dashboard');
-var consoleConnHandler      = baseConnHandler('console');
+var adminConnHandler      = baseConnHandler('admin');
 
 var meta = {
 
@@ -160,11 +160,11 @@ var meta = {
 //        timers  : {},
         socket  : io.of('/dashboard').on('connection', dashboardConnHandler)
     },
-    console : {
+    admin : {
 
         clients : {},
 //        timers  : {},
-        socket  : io.of('/console').on('connection', consoleConnHandler)
+        socket  : io.of('/admin').on('connection', adminConnHandler)
     }
 };
 
@@ -174,8 +174,8 @@ mediator.on("user:joined", function(data) {
     console.log(JSON.stringify(data));
     console.log(data._channel + " clients # " + Object.keys(meta[data._channel].clients).length + "\n");
 
-    meta.dashboard.socket.emit("user:joined", data);
-    meta.console.socket.emit("user:joined", data);
+    if (meta.dashboard) { meta.dashboard.socket.emit("user:joined", data); }
+    if (meta.admin) { meta.admin.socket.emit("user:joined", data); }
 })
 
 mediator.on("user:left", function(data) {

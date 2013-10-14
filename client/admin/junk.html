@@ -1,0 +1,526 @@
+
+    <!--    
+	<style>
+
+		.step {
+			position:relative;
+			overflow:hidden;
+			opacity:.4;
+
+			-webkit-transition: opacity 1s;
+			-moz-transition:    opacity 1s;
+			-ms-transition:     opacity 1s;
+			-o-transition:      opacity 1s;
+			transition:         opacity 1s;
+		}
+
+
+
+		.step.active {
+			opacity:.6;
+		}
+
+		.step:nth-child(6n) {
+			background:red;
+		}
+
+		.step:nth-child(6n + 1) {
+			background:green;
+		}
+
+		.step:nth-child(6n + 2) {
+			background:blue;
+		}
+
+		.step:nth-child(6n + 3) {
+			background:cyan;
+		}
+
+		.step:nth-child(6n + 4) {
+			background:magenta;
+		}
+
+		.step:nth-child(6n + 5) {
+			background:yellow;
+		}
+		#overview {
+			display:none;
+		}
+	</style>
+-->
+<!-- <body ng-controller="MainController">
+	<div data-impress impress-data="steps" impress-enter="onEnter()" impress-leave="onLeave()" id="impress">
+		<div ng-controller="DonationsController">
+			<div ng-repeat="donation in donations" data-impress-step="donation.id" impress-x="donation.x" impress-y="donation.y" impress-z="donation.z" impress-rotate-y="donation.rotation">
+				{{donation | json}}
+			</div>
+		</div>
+	</div>
+	<script src="assets/lib/requirejs/require-2.1.8.js" data-main="assets/js/main"></script>
+</body>
+</html> -->
+                    <!--
+                    <p>
+                        <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="A">A</button>
+                    </p>
+                    <p>
+                        <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="B">B</button>
+                    </p>
+                    <p>
+                        <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="C">C</button>
+                    </p>
+                    <p>
+                        <button class="topcoat-button--large larger" choice-command active-choice="activeChoice" data-choice="D">D</button>
+                    </p>
+
+
+    <script type="text/javascript">
+    var activeChoice = {
+
+        choice: null,
+        el: null
+    };
+
+    var resultClass = {
+
+        CORRECT : 'correct',
+        INCORRECT : 'incorrect'
+    };
+
+    var choices = {
+
+        A   : 'a',
+        B   : 'b',
+        C   : 'c',
+        D   : 'd'
+    };
+
+    var closeOverlay = function() {
+
+        $("#modal-8 div").removeClass(resultClass.CORRECT);
+        $("#modal-8 div").removeClass(resultClass.INCORRECT);
+
+        $(".md-overlay").removeClass("md-show");
+        $("#modal-8").removeClass("md-show");
+
+    };
+
+    var openOverlay = function(result) {
+
+        $("#modal-8 div").addClass(result);
+
+        $("#modal-8").addClass("md-show");
+        $(".md-overlay").addClass("md-show");
+    };
+
+    var choiceCommand = function(event) {
+
+        var el = $(event.target);
+        var choice = el.data('choice');
+
+        if ((activeChoice.choice) && (activeChoice.choice === choice)) {
+            // repeat button press - take no action
+            return;
+        }
+        if (activeChoice.el) {
+
+            activeChoice.el.removeClass("activeButton");
+        }
+        activeChoice.el = el;
+        activeChoice.choice = choice;
+        activeChoice.el.addClass("activeButton");
+        console.debug(activeChoice.choice);
+
+        if (activeChoice.choice === choices.D) {
+
+            openOverlay(resultClass.INCORRECT);
+        }
+        else if (activeChoice.choice === choices.B) {
+
+            openOverlay(resultClass.CORRECT);
+        }
+    };
+
+    var clearChoice = function() {
+
+        if (activeChoice.choice) {
+
+            activeChoice.el.removeClass("activeButton");
+            activeChoice.el = null;
+            activeChoice.choice = null;
+        }
+    }
+
+    if (Modernizr.touch) {
+
+        //$(".topcoat-button--large").hammer().on('tap', choiceCommand);
+        $(".topcoat-button--large").on('touchstart', choiceCommand);
+        $(".md-close").on('touchstart', closeOverlay);
+
+    } else {
+
+        $(".topcoat-button--large").on('click', choiceCommand);
+        $(".md-close").on('click', closeOverlay);
+    }
+
+    setTimeout(function() { openOverlay(); }, 2000);
+    </script>
+
+    /*
+        var choiceStateList = {
+
+            NONE        : 'NONE',
+            SELECTED    : 'SELECTED'
+        };
+*/      
+
+    function choiceCommand() {
+
+        var choices = {
+
+            A   : 'A',
+            B   : 'B',
+            C   : 'C',
+            D   : 'D'
+        };
+        
+        var activeElement = null;
+
+        function choiceCommandLink($scope, $element, $attr) {
+
+            $element.on('click', function(event) {
+
+                var el      = angular.element(event.target);
+                var choice  = el.data('choice');
+
+                console.log('click ! ' + choice);
+                console.log($scope.activeChoice);
+
+                if (($scope.activeChoice) && ($scope.activeChoice === choice)) {
+                    console.log('repeat');
+                    return;
+                }
+                if (activeElement) {
+                    activeElement.removeClass("activeButton");
+                }
+                activeElement = el;
+                activeElement.addClass("activeButton");
+                $scope.activeChoice = choice;
+
+                $scope.$emit('quiz:setChoice', choice);
+            });
+/*
+            $scope.$watch('activeChoice', function(value) {
+
+                console.log('activeChoice changed ' + value);
+
+                if ((value === null) && (activeElement !== null)) {
+                    console.log('bang')
+                    activeElement.removeClass("activeButton");
+                    activeElement = null;
+                }
+            });
+*/
+            $scope.$on('quiz:resetChoice', function(event, value){
+
+//              console.log('activeChoice changed ' + value);
+
+                if ((value === null) && (activeElement !== null)) {
+//                  console.log('bang')
+                    activeElement.removeClass("activeButton");
+                    activeElement = null;
+                }
+            });
+        }
+
+        return {
+            restrict: 'A',
+            /*
+            scope: {
+                activeChoice    : "="
+            },
+            */
+            link: choiceCommandLink,
+        };
+    }
+
+
+
+    QuizServices.bus.on('ping', function() {
+
+        $log.log("ping received from server " + Date.now());
+        QuizServices.bus.emit('ping');      
+    });
+
+    QuizServices.bus.emit('ping');
+
+    QuizServices.rpc.getTime().then(function(data) {
+
+        console.log('getTime response : ' + data);
+    });
+
+    QuizServices.rpc.echo('one two three', 'abc', 5).then(function(data) {
+
+        console.log('echo response : ' + data);
+    });
+
+
+        $scope.$watch('activeChoice', function(value) {
+
+            console.log('activeChoice changed');
+            console.log($scope.activeChoice);
+
+            if (value !== null) {
+
+                //QuizServices.bus.emit('quiz:user:setChoice', { 'choice' : $scope.activeChoice});
+            } 
+        });
+
+        $scope.$on('quiz:setChoice', function(event, value) {
+
+            console.log('activeChoice changed');
+            console.log($scope.activeChoice);
+            console.log(value);
+
+            if (value !== null) {
+
+                //QuizServices.bus.emit('quiz:user:setChoice', { 'choice' : value});
+            } 
+        });
+
+    QuizServices.bus.on('quiz:server:lockChoice', function() {
+
+        $scope.$apply(function() {
+            $log.log("quiz:server:lockChoice received from server " + Date.now());
+            $scope.submissionsOpen = false; 
+        });
+
+    });
+
+    QuizServices.bus.on('quiz:server:unlockChoice', function() {
+
+        $scope.$apply(function() {
+            $log.log("quiz:server:unlockChoice received from server " + Date.now());
+            $scope.submissionsOpen = true;
+        }); 
+    });
+
+    QuizServices.bus.on('quiz:server:answer', function(data) {
+
+        $scope.$apply(function() {
+            $log.log("quiz:server:answer received from server " + Date.now());
+            $scope.setResult( data.answer === $scope.activeChoice ? 'correct' : 'incorrect');
+        }); 
+    });
+
+
+
+    html, body {
+        width : 100%;
+        height: 100%;
+    }
+    a, input, button {
+        -ms-touch-action: none !important;
+    }
+    .centerize {
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+    }
+    .full {
+        height: 100%;
+        width:100%;
+    }
+    .larger {
+        width: 80%;
+        height: 20%;
+        text-align: center;
+        color: #ffffff;
+        margin: 6px;
+        font-size: 40pt;
+        font-weight: 900;
+    }
+    .activeButton {
+        /* background-color: #1976c3; */
+        background-color: #98011f;
+        -webkit-box-shadow: inset 0 1px rgba(0, 0, 0, 0.12);
+        box-shadow: inset 0 1px rgba(0, 0, 0, 0.12);
+    }
+    .activeButton:hover {
+        background-color: #98011f;
+    }
+    .show {
+        display : block;
+    }
+    .hide {
+        display : none;
+    }
+    #overlay-content {
+        position: absolute;
+        /* makes the div go into a position that’s absolute to the browser viewing area */
+        left: 25%;
+        /* positions the div half way horizontally */
+        top: 25%;
+        /* positions the div half way vertically */
+        padding: 25px;
+        border: 2px solid black;
+        background-color: #ffffff;
+        width: 50%;
+        height: 50%;
+        z-index: 100;
+        /* makes the div the top layer, so it’ll lay on top of the other content */
+        width: 50%;
+        height: auto;
+        overflow: hidden;
+        /*
+        margin: 20%;
+        padding: 20px 10px;
+        */
+        border-radius: 6px;
+        background-color: #e5e9e8;
+        border: 1px solid #a5a8a8;
+        text-align: center;
+    }
+    #overlay {
+        position: absolute;
+        /* makes the div go into a position that’s absolute to the browser viewing area */
+        left: 0%;
+        /* makes the div span all the way across the viewing area */
+        top: 0%;
+        /* makes the div span all the way across the viewing area */
+        background-color: black;
+        -moz-opacity: 0.5;
+        /* makes the div transparent, so you have a cool overlay effect */
+        opacity: .50;
+        filter: alpha(opacity=50);
+        width: 100%;
+        height: 100%;
+        z-index: 90;
+        /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
+        box-shadow: inset 0px 0px 115px 0px #000;
+    }
+    #overlay-content h1 {
+        padding-bottom: 20px;
+        border-bottom: 1px solid #d3d7d7;
+    }
+    .incorrect {
+        background: #e74c3c;
+    }
+    .lockChoice {
+        background: #1976c3;
+    }
+    .correct {
+        background: #50863B;
+    }
+    .md-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 50%;
+        max-width: 630px;
+        min-width: 320px;
+        height: auto;
+        z-index: 2000;
+        visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        -moz-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+    }
+    .md-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        visibility: hidden;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        background-color: black;
+        -moz-opacity: 0.5;
+        /* makes the div transparent, so you have a cool overlay effect */
+        opacity: .50;
+        filter: alpha(opacity=50);
+        width: 100%;
+        height: 100%;
+        box-shadow: inset 0px 0px 115px 0px #000;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+    }
+    .md-show {
+        visibility: visible;
+    }
+    .md-show ~ .md-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+    /* Content styles */
+    .md-content {
+        color: #fff;
+        position: relative;
+        border-radius: 3px;
+        margin: 0 auto;
+    }
+    .md-content h3 {
+        margin: 0;
+        padding: 0.4em;
+        text-align: center;
+        font-size: 2.4em;
+        font-weight: 300;
+        opacity: 0.8;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px 3px 0 0;
+    }
+    .md-content > div {
+        padding: 15px 40px 30px;
+        margin: 0;
+        font-weight: 300;
+        font-size: 1.15em;
+    }
+    .md-content > div p {
+        margin: 0;
+        padding: 10px 0;
+        text-align: center;
+    }
+    .md-content > div ul {
+        margin: 0;
+        padding: 0 0 30px 20px;
+    }
+    .md-content > div ul li {
+        padding: 5px 0;
+    }
+    .md-content button {
+        display: block;
+        margin: 0 auto;
+        font-size: 0.8em;
+    }
+    /* Effect 8: 3D flip horizontal */
+    .md-effect-spin.md-modal {
+        -webkit-perspective: 1300px;
+        -moz-perspective: 1300px;
+        perspective: 1300px;
+    }
+    .md-effect-spin .md-content {
+        -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transform: rotateY(-70deg);
+        -moz-transform: rotateY(-70deg);
+        -ms-transform: rotateY(-70deg);
+        transform: rotateY(-70deg);
+        -webkit-transition: all 0.2s;
+        -moz-transition: all 0.2s;
+        transition: all 0.4s;
+        opacity: 0;
+    }
+    .md-show.md-effect-spin .md-content {
+        -webkit-transform: rotateY(0deg);
+        -moz-transform: rotateY(0deg);
+        -ms-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+

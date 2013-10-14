@@ -1,0 +1,5 @@
+[ { "_id" : 1,
+    "hasImage" : false,
+    "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/sponsor/1",
+    "sponsorName" : "zz"
+  } ]

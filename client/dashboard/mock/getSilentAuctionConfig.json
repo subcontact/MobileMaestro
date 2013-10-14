@@ -1,0 +1,11 @@
+{ "auctionOpen" : true,
+  "bigFontColour" : "#ffffff",
+  "bigFontSize" : 20,
+  "countdownTime" : 0.0,
+  "displayImages" : true,
+  "numberOfItems" : 3,
+  "numberOfSponsors" : 3,
+  "smallFontColour" : "#ffffff",
+  "smallFontSize" : 12,
+  "timePerPage" : 30
+}

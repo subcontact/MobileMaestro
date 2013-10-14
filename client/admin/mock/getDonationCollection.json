@@ -1,0 +1,104 @@
+{ "items" : [ 
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 2,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 5,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 6,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 7,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 8,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 3,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [  ],
+        "hasImage" : false,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/2",
+        "itemId" : 4,
+        "itemName" : "Item without Donations",
+        "numberOfDonation" : 0,
+        "percentReached" : 0,
+        "sumOfDonation" : 0
+      },
+      { "donations" : [ { "donationAmount" : 200,
+              "donationTime" : 1380596894189,
+              "donatorName" : "test guest"
+            },
+            { "donationAmount" : 50,
+              "donationTime" : 1380596401625,
+              "donatorName" : "test guest"
+            },
+            { "donationAmount" : 50,
+              "donationTime" : 1380596083950,
+              "donatorName" : "test guest"
+            },
+            { "donationAmount" : 50,
+              "donationTime" : 1380595694888,
+              "donatorName" : "test guest"
+            },
+            { "donationAmount" : 50,
+              "donationTime" : 1380595221673,
+              "donatorName" : "test guest"
+            },
+            { "donationAmount" : 50,
+              "donationTime" : 1380595092611,
+              "donatorName" : "test guest"
+            },
+            { "donationAmount" : 50,
+              "donationTime" : 1380594485090,
+              "donatorName" : "test guest"
+            }
+          ],
+        "hasImage" : true,
+        "imageURL" : "192.168.0.60:8080/donation-server/services/getImage/item/1",
+        "itemId" : 1,
+        "itemName" : "zzzz",
+        "numberOfDonation" : 7,
+        "percentReached" : 12,
+        "sumOfDonation" : 600
+      }
+    ],
+  "totalAmount" : 600
+}
