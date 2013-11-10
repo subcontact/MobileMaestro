@@ -17,6 +17,16 @@ define(['angular', 'socketio'], function(angular, socketio){
 	            });
 	        },
 
+	        once : function(eventName, callback) {
+	            socket.once(eventName, function(data) {
+					$rootScope.$apply(function() {
+		                if (callback) {
+		                    callback.call(socket, data);
+		                }
+		            });
+	            });
+	        },
+
 	        emit : function(eventName, data, callback) {
 	            socket.emit(eventName, data, function(data) {
 					$rootScope.$apply(function() {
@@ -27,11 +37,10 @@ define(['angular', 'socketio'], function(angular, socketio){
 	            });
 	        },
 
-	        off : function(eventName, callback) {
+	        off : function(eventName) {
+		        socket.removeListener(eventName);
 	        },
 
-	        offAll : function(eventName) {
-	        },
 	//--------------------------------------------------------------------------------------------------------------------
 			onResult : function(callback, context) {
 			    self.bus.on('quiz:server:result', function(data) {
